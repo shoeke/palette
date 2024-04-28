@@ -1,0 +1,39 @@
+#target illustrator-28;
+
+// Step 1: Create a new layer and a rectangle with the specified fill color on it, then select it
+
+// Function to create a new layer, a rectangle with the specified fill color, and select it
+function createRectangleWithFillColor() {
+    var doc = app.activeDocument; // Get the active document
+
+    // Create a new layer named "temp"
+    var newLayer = doc.layers.add();
+    newLayer.name = "temp";
+
+    // Ensure the new layer is unlocked
+    newLayer.locked = false;
+
+    // Create a new rectangle on the new layer
+    var rect = newLayer.pathItems.rectangle(0, 0, 100, 100);
+
+    // Set the fill color to RGB(228, 231, 228)
+    var fillColor = new RGBColor();
+    fillColor.red = 228;
+    fillColor.green = 231;
+    fillColor.blue = 228;
+    rect.fillColor = fillColor;
+
+    // Remove the stroke
+    rect.stroked = false;
+
+    // Select the rectangle
+    rect.selected = true;
+}
+
+// Call the function to create the new layer, the rectangle with the specified fill color, and select it
+createRectangleWithFillColor();
+
+// Step 2: Find items with the same fill color as the selected rectangle
+
+// Execute the built-in menu command to find items with the same fill color
+app.executeMenuCommand("Find Fill Color menu item");
