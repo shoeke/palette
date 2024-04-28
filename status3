@@ -1,0 +1,274 @@
+#target illustrator-28;
+#targetengine "main" 
+
+//DEFINE WORKING DOCUMENT - moved inside each function
+//var myDoc = app.activeDocument;
+
+//**** REPLACE SOFT RETURN ****
+//FIND soft return replace with hard return
+// ai translates soft returns into asciII ETX for "end of text" which is CharCode(3)
+//CONNECT TO checkReturnsBtn
+function replaceSoftRet(){
+    var myDoc = app.activeDocument;
+    var search_string = String.fromCharCode(3); // ETX asciII
+    var replace_string = "\r";//regex for hard return
+    var text_frames = myDoc.textFrames;
+    var this_text_frame, this_text_frame;
+    //loop through text frames for a find and replace
+    if (text_frames.length > 0) {
+    for (var i = 0 ; i < text_frames.length; i++) {
+            this_text_frame = text_frames[i];
+            new_string = this_text_frame.contents.replace(search_string, replace_string);
+            this_text_frame.contents = new_string;
+    }
+    }
+}
+//* * * * * * * * * * * * * * * * *
+//function to test connection to check box hueShift - SAVE TO TEST OTHER CHECKBOXES IF NEEDED
+function testCheckbox(){
+    if (lake.value === true) {
+    // Checkbox is checked
+    // Perform some action
+    alert("Checkbox is checked!");
+} else {
+    // Checkbox is not checked
+    // Perform some other action
+    alert("Checkbox is not checked!");
+}}
+
+function setCheckboxesChecked() {
+    street.value = true;
+    grass.value = true;
+    trails.value = true;
+    lake.value = true;
+    building.value = true;
+}
+//* * * * * * * * * * * * * * * * *
+
+//ADDING FUNCTION FOR SINGLE COLOR BUT WILL NEED TO CHANGE TO MAKE IT DRY FOR ALL COLORS
+
+function colorSwapNow() {
+    var myDoc = app.activeDocument;
+
+    // Color swaps based on checkbox values
+    if (lake.value === true) {
+        swapColor("Lakes", [147, 206, 229]);
+    }
+    if (street.value === true) {
+        swapColor("Streets", [235, 235, 235]);
+    }
+    if (grass.value === true) {
+        swapColor("Grass", [217, 229, 211]);
+    }
+    if (trails.value === true) {
+        swapColor("Trails", [233, 236, 233]);
+    }
+    if (building.value === true) {
+        swapColor("Buildings", [209, 201, 188]);
+    }
+    if (golf.value === true) {
+        swapColor("Golf Courses", [197, 212, 190]);
+    }
+    // Add similar if statements for other checkboxes as needed
+
+    // Function to swap color
+    function swapColor(swatchName, newColor) {
+        var myDoc = app.activeDocument;
+        var swatch = findSpotSwatchByName(myDoc, swatchName);
+
+        // Function to find a spot color swatch by name
+        function findSpotSwatchByName(doc, name) {
+            for (var i = 0; i < doc.spots.length; i++) {
+                if (doc.spots[i].name === name) {
+                    return doc.spots[i];
+                }
+            }
+            return null; // Swatch not found
+        }
+
+        // Check if swatch is found and update color if needed
+        if (swatch !== null) {
+            swatch.color = makeSpotColor(newColor[0], newColor[1], newColor[2]);
+        } else {
+            alert("Swatch named '" + swatchName + "' not found!");
+        }
+
+        // Function to update the color of an existing spot color swatch
+        function makeSpotColor(red, green, blue) {
+            var newColor = new RGBColor();
+            newColor.red = red;
+            newColor.green = green;
+            newColor.blue = blue;
+
+            return newColor;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+// HUESHIFTPALETTE
+// ===============
+var HueShiftPalette = new Window("palette"); 
+    HueShiftPalette.text = "Hue Shift Palette"; 
+    HueShiftPalette.preferredSize.width = 3; 
+    HueShiftPalette.preferredSize.height = 9; 
+    HueShiftPalette.orientation = "column"; 
+    HueShiftPalette.alignChildren = ["left","top"]; 
+    HueShiftPalette.spacing = 10; 
+    HueShiftPalette.margins = 16; 
+
+// CHECKRETURNSPANEL
+// =================
+var checkReturnsPanel = HueShiftPalette.add("panel", undefined, undefined, {name: "checkReturnsPanel"}); 
+    checkReturnsPanel.text = "Check returns"; 
+    checkReturnsPanel.preferredSize.width = 250; 
+    checkReturnsPanel.orientation = "column"; 
+    checkReturnsPanel.alignChildren = ["left","top"]; 
+    checkReturnsPanel.spacing = 10; 
+    checkReturnsPanel.margins = 10; 
+
+var statictext1 = checkReturnsPanel.add("statictext", undefined, undefined, {name: "statictext1"}); 
+    statictext1.text = "Remove any soft returns"; 
+    statictext1.alignment = ["fill","top"]; 
+
+var checkReturnsBtn = checkReturnsPanel.add("button", undefined, undefined, {name: "checkReturnsBtn"}); 
+    checkReturnsBtn.text = "Check returns"; 
+    checkReturnsBtn.alignment = ["center","top"]; 
+
+// HUESHIFTPALETTE
+// ===============
+var divider1 = HueShiftPalette.add("panel", undefined, undefined, {name: "divider1"}); 
+    divider1.alignment = "fill"; 
+
+// COLORSWAPPANEL
+// ==============
+var colorSwapPanel = HueShiftPalette.add("panel", undefined, undefined, {name: "colorSwapPanel"}); 
+    colorSwapPanel.text = "Swatch Color Assign"; 
+    colorSwapPanel.preferredSize.width = 250; 
+    colorSwapPanel.orientation = "column"; 
+    colorSwapPanel.alignChildren = ["left","top"]; 
+    colorSwapPanel.spacing = 10; 
+    colorSwapPanel.margins = 10; 
+
+var street = colorSwapPanel.add("checkbox", undefined, undefined, {name: "street"}); 
+    street.text = "Streets: to #ebebeb"; 
+    street.alignment = ["left","top"]; 
+
+var grass = colorSwapPanel.add("checkbox", undefined, undefined, {name: "grass"}); 
+    grass.text = "Grass: to #d9e5d3"; 
+
+var trails = colorSwapPanel.add("checkbox", undefined, undefined, {name: "trails"}); 
+    trails.text = "Trails: to #e9ece9"; 
+
+var lake = colorSwapPanel.add("checkbox", undefined, undefined, {name: "lake"}); 
+    lake.text = "Lakes: to #93cee5"; 
+
+var building = colorSwapPanel.add("checkbox", undefined, undefined, {name: "building"}); 
+    building.text = "Buildings: to #d1c9bc"; 
+
+var golf = colorSwapPanel.add("checkbox", undefined, undefined, {name: "golf"}); 
+    golf.text = "Golf Courses: to #c5d4be"; 
+
+//var altGolf = colorSwapPanel.add("checkbox", undefined, undefined, {name: "altGolf"}); 
+   // altGolf.text = "Alt Golf: #d8e0d9 to #c5d4be";     
+
+var swapColorsBtn = colorSwapPanel.add("button", undefined, undefined, {name: "swapColorsBtn"}); 
+    swapColorsBtn.text = "Swap Selected Colors"; 
+    swapColorsBtn.alignment = ["center","top"]; 
+
+// HUESHIFTPALETTE
+// ===============
+var divider2 = HueShiftPalette.add("panel", undefined, undefined, {name: "divider2"}); 
+    divider2.alignment = "fill"; 
+
+// COURTSPANEL
+// ===========
+var courtsPanel = HueShiftPalette.add("panel", undefined, undefined, {name: "courtsPanel"}); 
+    courtsPanel.text = "Adjust courts"; 
+    courtsPanel.preferredSize.width = 250; 
+    courtsPanel.orientation = "column"; 
+    courtsPanel.alignChildren = ["left","top"]; 
+    courtsPanel.spacing = 10; 
+    courtsPanel.margins = 10; 
+
+var selectCourtsBtn = courtsPanel.add("button", undefined, undefined, {name: "selectCourtsBtn"}); 
+    selectCourtsBtn.text = "Select courts"; 
+    selectCourtsBtn.alignment = ["center","top"]; 
+
+var courtTxt = courtsPanel.add("statictext", undefined, undefined, {name: "courtTxt"}); 
+    courtTxt.text = "Make courts #ccd5cc"; 
+    courtTxt.preferredSize.width = 250; 
+
+var changeCourtsBtn = courtsPanel.add("button", undefined, undefined, {name: "changeCourtsBtn"}); 
+    changeCourtsBtn.text = "Change courts"; 
+    changeCourtsBtn.alignment = ["center","top"]; 
+
+// HUESHIFTPALETTE
+// ===============
+var divider3 = HueShiftPalette.add("panel", undefined, undefined, {name: "divider3"}); 
+    divider3.alignment = "fill"; 
+
+// HIDEHOMESITESPANEL
+// ==================
+var hideHomesitesPanel = HueShiftPalette.add("panel", undefined, undefined, {name: "hideHomesitesPanel"}); 
+    hideHomesitesPanel.text = "Hide homesites"; 
+    hideHomesitesPanel.preferredSize.width = 250; 
+    hideHomesitesPanel.orientation = "column"; 
+    hideHomesitesPanel.alignChildren = ["left","top"]; 
+    hideHomesitesPanel.spacing = 10; 
+    hideHomesitesPanel.margins = 10; 
+
+var hideHomesitesBtn = hideHomesitesPanel.add("button", undefined, undefined, {name: "hideHomesitesBtn"}); 
+    hideHomesitesBtn.text = "Hide"; 
+    hideHomesitesBtn.alignment = ["center","top"]; 
+
+// HUESHIFTPALETTE
+// ===============
+var divider4 = HueShiftPalette.add("panel", undefined, undefined, {name: "divider4"}); 
+    divider4.alignment = "fill"; 
+
+// EXPORTPANEL
+// ===========
+var exportPanel = HueShiftPalette.add("panel", undefined, undefined, {name: "exportPanel"}); 
+    exportPanel.text = "Export"; 
+    exportPanel.preferredSize.width = 250; 
+    exportPanel.orientation = "column"; 
+    exportPanel.alignChildren = ["left","top"]; 
+    exportPanel.spacing = 10; 
+    exportPanel.margins = 10; 
+
+var exportBtn = exportPanel.add("button", undefined, undefined, {name: "exportBtn"}); 
+    exportBtn.text = "Export SVG"; 
+    exportBtn.alignment = ["center","top"]; 
+
+ //PLACE ALL BUTTON EVENTS HERE
+//add event listener, use BridgeTalk to communicate with the active document from a palette. Assign desired actions/function to bt.body
+checkReturnsBtn.onClick = function() {
+
+    var bt=new BridgeTalk();
+    bt.target = "illustrator-28";
+    bt.body = 'replaceSoftRet()';
+    return bt.send();
+}
+//swapColorsBtn
+swapColorsBtn.onClick = function() {
+
+    var bt=new BridgeTalk();
+    bt.target = "illustrator-28";
+    bt.body = 'colorSwapNow()';
+    return bt.send();
+}
+
+ //SHOW PALETTE   
+
+HueShiftPalette.show();
+setCheckboxesChecked();
+
